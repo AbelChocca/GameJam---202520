@@ -7,6 +7,8 @@
 using namespace System::Drawing;
 using namespace System::Windows::Forms;
 
+
+
 ref class Jugador : public Figura {
 private:
     int lados;
@@ -16,11 +18,11 @@ private:
 
 public:
     // Constructor
-    Jugador(int x, int y) : Figura(Point(x, y), Color::White, 0) {
+    Jugador(int x, int y) : Figura(Point(x, y), Color::White, 0, 30) {
         this->rand = gcnew Random();
         this->lados = 3;
         this->velocidad = 5;
-        array<Color>^ colores = gcnew array<Color>{ Color::Yellow, Color::Blue, Color::Red };
+        array<Color>^ colores = gcnew array<Color>{ Color::DarkGreen, Color::Blue, Color::Red };
         this->color = colores[this->rand->Next(0, colores->Length)];
         this->sumaDeAngulos = (lados - 2) * 180;
     }
@@ -32,7 +34,7 @@ public:
 
     void setVelocidad(int v) { velocidad = v; }
 
-    void mover(Keys tecla) {
+    void moverJugador(Keys tecla) {
         switch (tecla) {
         case Keys::W: this->posicion.Y -= velocidad; break;
         case Keys::S: this->posicion.Y += velocidad; break;
@@ -49,24 +51,33 @@ public:
         }
     }
 
-    virtual void dibujar(Graphics^ g) override {
+    void Dibujar(Graphics^ g) override {
         Pen^ lapiz = gcnew Pen(color, 3);
         array<Point>^ puntos = gcnew array<Point>(lados);
 
         double angulo = (2 * Math::PI) / lados;
-        int radio = 30;
 
         for (int i = 0; i < lados; i++) {
-            double px = this->posicion.X + radio * cos(i * angulo - Math::PI / 2);
-            double py = this->posicion.Y + radio * sin(i * angulo - Math::PI / 2);
+            double px = this->posicion.X + this->radioBox * cos(i * angulo - Math::PI / 2);
+            double py = this->posicion.Y + this->radioBox * sin(i * angulo - Math::PI / 2);
             puntos[i] = Point((int)px, (int)py);
         }
 
         g->DrawPolygon(lapiz, puntos);
 
-        Brush^ b = Brushes::White;
+        Brush^ b = Brushes::Black;
         g->DrawString(scoring.ToString(), gcnew System::Drawing::Font("Arial", 10),
-            b, (float)this->posicion.X - 10, (float)this->posicion.Y - 10);
+            b, (float)this->posicion.X - 8, (float)this->posicion.Y - 10);
+    }
+    void InteraccionColision(ColisionArgs^ args) override {
+        if (args->color == this->color) {
+            this->lados++;
+            this->scoring += args->scoring;
+        }
+        else {
+            this->lados--;
+            this->scoring -= args->scoring;
+        }
     }
 
     void resetear() {

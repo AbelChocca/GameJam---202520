@@ -132,6 +132,7 @@
     <ClInclude Include="Figuras\Figura.h" />
     <ClInclude Include="Figuras\Jugador.h" />
     <ClInclude Include="Figuras\Triangulo.h" />
+    <ClInclude Include="shared\ColisionArgs.h" />
     <ClInclude Include="Tramos\Tramo1.h" />
     <ClInclude Include="Tramos\TramoInterfaz.h" />
     <ClInclude Include="VentanaPrincipal.h">
@@ -139,6 +140,9 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Carrera.resx">
+      <DependentUpon>Carrera.h</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="VentanaPrincipal.resx">
       <DependentUpon>VentanaPrincipal.h</DependentUpon>
     </EmbeddedResource>

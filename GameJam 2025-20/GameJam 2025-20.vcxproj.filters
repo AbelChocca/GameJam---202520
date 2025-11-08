@@ -19,6 +19,9 @@
     <Filter Include="Figuras">
       <UniqueIdentifier>{b4a6e2a9-45ab-4b5e-a972-8737eba43128}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shared">
+      <UniqueIdentifier>{f89c3cab-4af0-4af5-bdb6-cc348bc56ca5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="VentanaPrincipal.cpp">
@@ -55,6 +58,9 @@
     </ClInclude>
     <ClInclude Include="Figuras\Jugador.h">
       <Filter>Figuras</Filter>
+    </ClInclude>
+    <ClInclude Include="shared\ColisionArgs.h">
+      <Filter>Shared</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

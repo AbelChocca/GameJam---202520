@@ -1,6 +1,6 @@
 #pragma once
-#include "Tramos/TramoInterfaz.h"
 #include "Figuras/Jugador.h"
+#include "Tramos/Tramo1.h"
 
 namespace GameJam202520 {
 
@@ -33,6 +33,15 @@ namespace GameJam202520 {
 			//TODO: agregar código de constructor aquí
 			//
 			this->esAutomatico = esAutomatico;
+			this->timerJuego = gcnew Timer();
+			this->timerJuego->Interval = 30;
+			this->KeyPreview = true;
+			this->KeyDown += gcnew KeyEventHandler(this, &Carrera::Carrera_KeyDown);
+			this->jugador = gcnew Jugador(25, this->panel2->Height / 2);
+			this->tramoActual = gcnew Tramo1();
+
+			this->timerJuego->Tick += gcnew EventHandler(this, &Carrera::GameLoop);
+			this->timerJuego->Start();
 		}
 
 	protected:
@@ -113,5 +122,42 @@ namespace GameJam202520 {
 #pragma endregion
 	private: System::Void label1_Click(System::Object^ sender, System::EventArgs^ e) {
 	}
-	};
+	private: void Carrera_KeyDown(System::Object^ sender, System::Windows::Forms::KeyEventArgs^ e) {
+		jugador->moverJugador(e->KeyCode);
+	}
+	private: void DibujarJuego()
+	{
+		Graphics^ g = panel2->CreateGraphics();
+		g->Clear(Color::White);
+
+		if (tramoActual != nullptr)
+			tramoActual->Dibujar(g, this->jugador);
+		if (jugador != nullptr)
+			jugador->Dibujar(g);
+
+		delete g;
+	}
+	void LimitarJugador()
+	{
+		if (jugador->Posicion.X < 0)
+			jugador->Posicion = Point(0, jugador->Posicion.Y);
+		else if (jugador->Posicion.X > panel2->Width)
+			jugador->Posicion = Point(panel2->Width, jugador->Posicion.Y);
+
+		if (jugador->Posicion.Y < 0)
+			jugador->Posicion = Point(jugador->Posicion.X, 0);
+		else if (jugador->Posicion.Y > panel2->Height)
+			jugador->Posicion = Point(jugador->Posicion.X, panel2->Height);
+	}
+	void GameLoop(Object^ sender, EventArgs^ e)
+	{
+		if (jugador != nullptr)
+			LimitarJugador();
+
+		if (tramoActual != nullptr)
+			tramoActual->Actualizar();
+
+		DibujarJuego();
+	}
+	}; 
 }
