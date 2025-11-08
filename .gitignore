@@ -1,0 +1,22 @@
+# Archivos de Visual Studio
+.vs/
+*.vcxproj.user
+*.suo
+*.user
+*.userosscache
+*.sdf
+*.opensdf
+*.db
+*.opendb
+
+# Carpetas de build temporales
+Debug/
+Release/
+x64/
+bin/
+obj/
+
+# Archivos de sistema
+Thumbs.db
+*.log
+*.vsidx
