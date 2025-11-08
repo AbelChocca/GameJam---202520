@@ -108,7 +108,8 @@ namespace GameJam202520 {
 		}
 #pragma endregion
 	private: System::Void JUGAR_Click(System::Object^ sender, System::EventArgs^ e) {
-
+		Carrera^ v = gcnew Carrera(false);
+		v->ShowDialog();
 	}
 	private: System::Void button2_Click(System::Object^ sender, System::EventArgs^ e) {
 

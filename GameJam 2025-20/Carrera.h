@@ -21,8 +21,10 @@ namespace GameJam202520 {
 		Timer^ timerJuego;
 		Jugador^ jugador;
 		Tramo^ tramoActual;
-		Panel^ panelJuego;
-		Random^ rand;
+	private: System::Windows::Forms::Panel^ panel1;
+	private: System::Windows::Forms::Panel^ panel2;
+	private: System::Windows::Forms::Label^ label1;
+		   Random^ rand;
 	public:
 		Carrera(bool esAutomatico)
 		{
@@ -58,12 +60,58 @@ namespace GameJam202520 {
 		/// </summary>
 		void InitializeComponent(void)
 		{
-			this->components = gcnew System::ComponentModel::Container();
-			this->Size = System::Drawing::Size(300,300);
-			this->Text = L"Carrera";
-			this->Padding = System::Windows::Forms::Padding(0);
+			this->panel1 = (gcnew System::Windows::Forms::Panel());
+			this->panel2 = (gcnew System::Windows::Forms::Panel());
+			this->label1 = (gcnew System::Windows::Forms::Label());
+			this->panel1->SuspendLayout();
+			this->SuspendLayout();
+			// 
+			// panel1
+			// 
+			this->panel1->Controls->Add(this->label1);
+			this->panel1->Dock = System::Windows::Forms::DockStyle::Right;
+			this->panel1->Location = System::Drawing::Point(375, 0);
+			this->panel1->Name = L"panel1";
+			this->panel1->Size = System::Drawing::Size(185, 266);
+			this->panel1->TabIndex = 0;
+			// 
+			// panel2
+			// 
+			this->panel2->Dock = System::Windows::Forms::DockStyle::Fill;
+			this->panel2->Location = System::Drawing::Point(0, 0);
+			this->panel2->Name = L"panel2";
+			this->panel2->Size = System::Drawing::Size(375, 266);
+			this->panel2->TabIndex = 1;
+			// 
+			// label1
+			// 
+			this->label1->AutoSize = true;
+			this->label1->Font = (gcnew System::Drawing::Font(L"Swis721 Blk BT", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->label1->Location = System::Drawing::Point(54, 9);
+			this->label1->Name = L"label1";
+			this->label1->Size = System::Drawing::Size(87, 18);
+			this->label1->TabIndex = 0;
+			this->label1->Text = L"Minimapa";
+			this->label1->TextAlign = System::Drawing::ContentAlignment::TopCenter;
+			this->label1->Click += gcnew System::EventHandler(this, &Carrera::label1_Click);
+			// 
+			// Carrera
+			// 
+			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
+			this->ClientSize = System::Drawing::Size(560, 266);
+			this->Controls->Add(this->panel2);
+			this->Controls->Add(this->panel1);
+			this->Name = L"Carrera";
+			this->Text = L"Carrera";
+			this->panel1->ResumeLayout(false);
+			this->panel1->PerformLayout();
+			this->ResumeLayout(false);
+
 		}
 #pragma endregion
+	private: System::Void label1_Click(System::Object^ sender, System::EventArgs^ e) {
+	}
 	};
 }

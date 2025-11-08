@@ -7,10 +7,12 @@ public ref class Figura abstract
 protected:
     Point posicion;
     Color color;
+    int scoring;
 public:
-    Figura(Point pos, Color col) {
+    Figura(Point pos, Color col, int score) {
         posicion = pos;
         color = col;
+        this->scoring = score;
     }
 
     virtual void Dibujar(Graphics^ g) abstract;
@@ -23,4 +25,6 @@ public:
         Point get() { return posicion; }
         void set(Point value) { posicion = value; }
     }
+
+    int getScore() { return this->scoring; }
 };

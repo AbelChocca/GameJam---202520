@@ -11,19 +11,17 @@ ref class Jugador : public Figura {
 private:
     int lados;
     int velocidad;
-    int scoring;
     int sumaDeAngulos;
-    Color color;
     Random^ rand;
 
 public:
     // Constructor
-    Jugador(int x, int y) : Figura(x, y) {
+    Jugador(int x, int y) : Figura(Point(x, y), Color::White, 0) {
         this->rand = gcnew Random();
         this->lados = 3;
         this->velocidad = 5;
-        this->scoring = 0;
         array<Color>^ colores = gcnew array<Color>{ Color::Yellow, Color::Blue, Color::Red };
+        this->color = colores[this->rand->Next(0, colores->Length)];
         this->sumaDeAngulos = (lados - 2) * 180;
     }
 
@@ -36,23 +34,21 @@ public:
 
     void mover(Keys tecla) {
         switch (tecla) {
-        case Keys::W: y -= velocidad; break;
-        case Keys::S: y += velocidad; break;
-        case Keys::A: x -= velocidad; break;
-        case Keys::D: x += velocidad; break;
+        case Keys::W: this->posicion.Y -= velocidad; break;
+        case Keys::S: this->posicion.Y += velocidad; break;
+        case Keys::A: this->posicion.X -= velocidad; break;
+        case Keys::D: this->posicion.X += velocidad; break;
         }
     }
 
-    // Crecer al comer una figura
-    void crecer() {
-        if (lados < 10) {
-            lados++;
-            sumaDeAngulos = (lados - 2) * 180;
-            scoring += 10; // suma puntos al crecer
+    void crecer(int score) {
+        if (this->lados < 10) {
+            this->lados++;
+            sumaDeAngulos = (this->lados - 2) * 180;
+            this->scoring += score;
         }
     }
 
-    // Dibujar figura del jugador (según cantidad de lados)
     virtual void dibujar(Graphics^ g) override {
         Pen^ lapiz = gcnew Pen(color, 3);
         array<Point>^ puntos = gcnew array<Point>(lados);
@@ -61,17 +57,16 @@ public:
         int radio = 30;
 
         for (int i = 0; i < lados; i++) {
-            double px = x + radio * cos(i * angulo - Math::PI / 2);
-            double py = y + radio * sin(i * angulo - Math::PI / 2);
+            double px = this->posicion.X + radio * cos(i * angulo - Math::PI / 2);
+            double py = this->posicion.Y + radio * sin(i * angulo - Math::PI / 2);
             puntos[i] = Point((int)px, (int)py);
         }
 
         g->DrawPolygon(lapiz, puntos);
 
-        // Mostrar scoring en el centro
         Brush^ b = Brushes::White;
         g->DrawString(scoring.ToString(), gcnew System::Drawing::Font("Arial", 10),
-            b, (float)x - 10, (float)y - 10);
+            b, (float)this->posicion.X - 10, (float)this->posicion.Y - 10);
     }
 
     void resetear() {
