@@ -2,24 +2,39 @@
 using namespace System;
 using namespace System::Drawing;
 
+ref class Figura; // Forward Declaration
+
 public ref class Tramo abstract
 {
 protected:
-    array<Rectangle>^ obstaculos;
-    Point posicionJugador;
-public:
-    Tramo() {}
+    array<Figura^>^ figuras;
+    Point posicionInicial;
 
-    // Métodos virtuales puros (abstractos)
+public:
+    Tramo(int cantidadFiguras, int initX, int initY)
+    {
+        this->figuras = gcnew array<Figura^>(cantidadFiguras);
+        this->posicionInicial = Point(initX, initY);
+    }
+
     virtual void Dibujar(Graphics^ g) abstract;
     virtual void Actualizar() abstract;
 
-    // Métodos comunes opcionales
-    virtual void Reiniciar() { posicionJugador = Point(0, 0); }
+    virtual void Reiniciar()
+    {
+        for (int i = 0; i < figuras->Length; i++)
+            figuras[i] = nullptr;
+    }
 
-    // Accesores
-    property Point PosJugador {
-        Point get() { return posicionJugador; }
-        void set(Point value) { posicionJugador = value; }
+    // Propiedades
+    property array<Figura^>^ Figuras
+    {
+        array<Figura^>^ get() { return figuras; }
+    }
+
+    property Point PosInicial
+    {
+        Point get() { return posicionInicial; }
+        void set(Point value) { posicionInicial = value; }
     }
 };

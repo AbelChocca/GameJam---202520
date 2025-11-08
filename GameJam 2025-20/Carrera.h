@@ -1,4 +1,6 @@
 #pragma once
+#include "Tramos/TramoInterfaz.h"
+#include "Figuras/Jugador.h"
 
 namespace GameJam202520 {
 
@@ -14,6 +16,13 @@ namespace GameJam202520 {
 	/// </summary>
 	public ref class Carrera : public System::Windows::Forms::Form
 	{
+	private:
+		bool esAutomatico;
+		Timer^ timerJuego;
+		Jugador^ jugador;
+		Tramo^ tramoActual;
+		Panel^ panelJuego;
+		Random^ rand;
 	public:
 		Carrera(bool esAutomatico)
 		{
@@ -41,7 +50,6 @@ namespace GameJam202520 {
 		/// Variable del diseñador necesaria.
 		/// </summary>
 		System::ComponentModel::Container ^components;
-		bool esAutomatico;
 
 #pragma region Windows Form Designer generated code
 		/// <summary>

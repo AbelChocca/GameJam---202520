@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Tramos">
+      <UniqueIdentifier>{9f74c779-d549-474f-b8bd-3d1598e79697}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Figuras">
+      <UniqueIdentifier>{b4a6e2a9-45ab-4b5e-a972-8737eba43128}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="VentanaPrincipal.cpp">
@@ -28,6 +34,27 @@
     </ClInclude>
     <ClInclude Include="Carrera.h">
       <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="Tramos\TramoInterfaz.h">
+      <Filter>Tramos</Filter>
+    </ClInclude>
+    <ClInclude Include="Figuras\Circulo.h">
+      <Filter>Figuras</Filter>
+    </ClInclude>
+    <ClInclude Include="Figuras\Cuadrado.h">
+      <Filter>Figuras</Filter>
+    </ClInclude>
+    <ClInclude Include="Figuras\Figura.h">
+      <Filter>Figuras</Filter>
+    </ClInclude>
+    <ClInclude Include="Figuras\Triangulo.h">
+      <Filter>Figuras</Filter>
+    </ClInclude>
+    <ClInclude Include="Tramos\Tramo1.h">
+      <Filter>Tramos</Filter>
+    </ClInclude>
+    <ClInclude Include="Figuras\Jugador.h">
+      <Filter>Figuras</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

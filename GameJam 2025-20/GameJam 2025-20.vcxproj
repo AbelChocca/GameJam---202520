@@ -127,6 +127,13 @@
     <ClInclude Include="Carrera.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="Figuras\Circulo.h" />
+    <ClInclude Include="Figuras\Cuadrado.h" />
+    <ClInclude Include="Figuras\Figura.h" />
+    <ClInclude Include="Figuras\Jugador.h" />
+    <ClInclude Include="Figuras\Triangulo.h" />
+    <ClInclude Include="Tramos\Tramo1.h" />
+    <ClInclude Include="Tramos\TramoInterfaz.h" />
     <ClInclude Include="VentanaPrincipal.h">
       <FileType>CppForm</FileType>
     </ClInclude>
