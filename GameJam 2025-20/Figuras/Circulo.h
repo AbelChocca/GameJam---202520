@@ -1,3 +1,4 @@
+#pragma once
 #include "Figura.h"
 
 using namespace System;

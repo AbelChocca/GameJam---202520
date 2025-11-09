@@ -36,10 +36,10 @@ public:
 
     void moverJugador(Keys tecla) {
         switch (tecla) {
-        case Keys::W: this->posicion.Y -= velocidad; break;
-        case Keys::S: this->posicion.Y += velocidad; break;
-        case Keys::A: this->posicion.X -= velocidad; break;
-        case Keys::D: this->posicion.X += velocidad; break;
+        case Keys::Up: this->posicion.Y -= velocidad; break;
+        case Keys::Down: this->posicion.Y += velocidad; break;
+        case Keys::Left: this->posicion.X -= velocidad; break;
+        case Keys::Right: this->posicion.X += velocidad; break;
         }
     }
 

@@ -62,5 +62,8 @@
     <ClInclude Include="shared\ColisionArgs.h">
       <Filter>Shared</Filter>
     </ClInclude>
+    <ClInclude Include="Tramo3.h">
+      <Filter>Tramos</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

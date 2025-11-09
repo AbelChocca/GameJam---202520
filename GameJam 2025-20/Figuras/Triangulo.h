@@ -1,3 +1,4 @@
+#pragma once
 #include "Figura.h"
 
 public ref class Triangulo : public Figura

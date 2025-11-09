@@ -1,6 +1,7 @@
 #pragma once
 #include "Figuras/Jugador.h"
 #include "Tramos/Tramo1.h"
+#include "Tramo3.h" // Incluido desde la raíz
 
 namespace GameJam202520 {
 
@@ -25,6 +26,18 @@ namespace GameJam202520 {
 	private: System::Windows::Forms::Panel^ panel2;
 	private: System::Windows::Forms::Label^ label1;
 		   Random^ rand;
+
+	private: System::Windows::Forms::Label^ lblLados;
+	private: System::Windows::Forms::Label^ lblPuntaje;
+	private: System::Windows::Forms::Label^ lblAngulos;
+	private: System::Windows::Forms::Label^ lblVelocidad;
+
+	private:
+		System::Collections::Generic::List<Tramo^>^ listaTramos;
+		int tramoIndex;
+		array<Color>^ coloresTramos;
+
+
 	public:
 		Carrera(bool esAutomatico)
 		{
@@ -37,8 +50,23 @@ namespace GameJam202520 {
 			this->timerJuego->Interval = 30;
 			this->KeyPreview = true;
 			this->KeyDown += gcnew KeyEventHandler(this, &Carrera::Carrera_KeyDown);
+
 			this->jugador = gcnew Jugador(25, this->panel2->Height / 2);
-			this->tramoActual = gcnew Tramo1();
+
+			this->coloresTramos = gcnew array<Color>{
+				Color::LightBlue, // Celeste para Tramo 1
+					Color::Green,     // Verde para Tramo 2
+					Color::Orange     // Naranja para Tramo 3
+			};
+
+			this->listaTramos = gcnew System::Collections::Generic::List<Tramo^>();
+			this->tramoIndex = 0;
+
+			this->listaTramos->Add(gcnew Tramo1()); 
+			this->listaTramos->Add(nullptr);
+			this->listaTramos->Add(gcnew Tramo3(panel2->Width, panel2->Height, false)); // Índice 2
+
+			this->tramoActual = this->listaTramos[this->tramoIndex];
 
 			this->timerJuego->Tick += gcnew EventHandler(this, &Carrera::GameLoop);
 			this->timerJuego->Start();
@@ -60,7 +88,7 @@ namespace GameJam202520 {
 		/// <summary>
 		/// Variable del diseñador necesaria.
 		/// </summary>
-		System::ComponentModel::Container ^components;
+		System::ComponentModel::Container^ components;
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -114,6 +142,52 @@ namespace GameJam202520 {
 			this->Controls->Add(this->panel1);
 			this->Name = L"Carrera";
 			this->Text = L"Carrera";
+
+			// 
+			// lblLados
+			// 
+			this->lblLados = (gcnew System::Windows::Forms::Label());
+			this->lblLados->AutoSize = true;
+			this->lblLados->Font = (gcnew System::Drawing::Font(L"Arial", 9.0F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+			this->lblLados->Location = System::Drawing::Point(15, 100);
+			this->lblLados->Name = L"lblLados";
+			this->lblLados->Size = System::Drawing::Size(48, 15);
+			this->lblLados->Text = L"Lados: 0";
+			this->panel1->Controls->Add(this->lblLados);
+			// 
+			// lblPuntaje
+			// 
+			this->lblPuntaje = (gcnew System::Windows::Forms::Label());
+			this->lblPuntaje->AutoSize = true;
+			this->lblPuntaje->Font = (gcnew System::Drawing::Font(L"Arial", 9.0F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+			this->lblPuntaje->Location = System::Drawing::Point(15, 120);
+			this->lblPuntaje->Name = L"lblPuntaje";
+			this->lblPuntaje->Size = System::Drawing::Size(58, 15);
+			this->lblPuntaje->Text = L"Puntaje: 0";
+			this->panel1->Controls->Add(this->lblPuntaje);
+			// 
+			// lblAngulos
+			// 
+			this->lblAngulos = (gcnew System::Windows::Forms::Label());
+			this->lblAngulos->AutoSize = true;
+			this->lblAngulos->Font = (gcnew System::Drawing::Font(L"Arial", 9.0F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+			this->lblAngulos->Location = System::Drawing::Point(15, 140);
+			this->lblAngulos->Name = L"lblAngulos";
+			this->lblAngulos->Size = System::Drawing::Size(62, 15);
+			this->lblAngulos->Text = L"Ángulos: 0°";
+			this->panel1->Controls->Add(this->lblAngulos);
+			// 
+			// lblVelocidad
+			// 
+			this->lblVelocidad = (gcnew System::Windows::Forms::Label());
+			this->lblVelocidad->AutoSize = true;
+			this->lblVelocidad->Font = (gcnew System::Drawing::Font(L"Arial", 9.0F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+			this->lblVelocidad->Location = System::Drawing::Point(15, 160);
+			this->lblVelocidad->Name = L"lblVelocidad";
+			this->lblVelocidad->Size = System::Drawing::Size(72, 15);
+			this->lblVelocidad->Text = L"Velocidad: 0";
+			this->panel1->Controls->Add(this->lblVelocidad);
+
 			this->panel1->ResumeLayout(false);
 			this->panel1->PerformLayout();
 			this->ResumeLayout(false);
@@ -125,39 +199,181 @@ namespace GameJam202520 {
 	private: void Carrera_KeyDown(System::Object^ sender, System::Windows::Forms::KeyEventArgs^ e) {
 		jugador->moverJugador(e->KeyCode);
 	}
-	private: void DibujarJuego()
+
+		   void DibujarMinimapa(Graphics^ g)
+		   {
+			   // --- Pinceles y Lápiz ---
+			   Pen^ borderPen = gcnew Pen(Color::Black, 2);
+
+			   // --- Definir las áreas de los Tramos (según la imagen) ---
+			   Rectangle rectT1 = Rectangle(90, 210, 65, 30); // Abajo
+			   Rectangle rectT2 = Rectangle(120, 80, 35, 90); // Derecha (vertical)
+			   Rectangle rectT3 = Rectangle(90, 40, 65, 30);  // Arriba
+
+			   // --- Brochas de color para cada tramo ---
+			   SolidBrush^ brushT1 = gcnew SolidBrush(this->coloresTramos[0]); // Celeste
+			   SolidBrush^ brushT2 = gcnew SolidBrush(this->coloresTramos[1]); // Verde
+			   SolidBrush^ brushT3 = gcnew SolidBrush(this->coloresTramos[2]); // Naranja
+
+			   // --- Dibujar Tramos (Relleno y Borde) ---
+			   g->FillRectangle(brushT1, rectT1);
+			   g->FillRectangle(brushT2, rectT2);
+			   g->FillRectangle(brushT3, rectT3);
+
+			   g->DrawRectangle(borderPen, rectT1);
+			   g->DrawRectangle(borderPen, rectT2);
+			   g->DrawRectangle(borderPen, rectT3);
+
+			   // --- Dibujar Ícono del Jugador ---
+			   if (jugador == nullptr) return;
+
+			   Point iconPos;
+			   int iconSize = 10;
+
+			   if (tramoIndex == 2) { // En Tramo 1
+				   iconPos = Point(rectT1.X + (rectT1.Width / 2) - (iconSize / 2),
+					   rectT3.Y + (rectT1.Height / 2) - (iconSize / 2));
+			   }
+			   else if (tramoIndex == 1) { // En Tramo 2
+				   iconPos = Point(rectT2.X + (rectT2.Width / 2) - (iconSize / 2),
+					   rectT2.Y + (rectT2.Height / 2) - (iconSize / 2));
+			   }
+			   else if (tramoIndex == 0) { // En Tramo 3
+				   iconPos = Point(rectT3.X + (rectT3.Width / 2) - (iconSize / 2),
+					   rectT1.Y + (rectT3.Height / 2) - (iconSize / 2));
+			   }
+
+			   SolidBrush^ playerBrush = gcnew SolidBrush(jugador->getColor());
+			   g->FillEllipse(playerBrush, iconPos.X, iconPos.Y, iconSize, iconSize);
+
+			   // --- Limpieza ---
+			   delete borderPen;
+			   delete brushT1;
+			   delete brushT2;
+			   delete brushT3;
+			   delete playerBrush;
+		   }	private:
+		void DibujarJuego()
 	{
-		Graphics^ g = panel2->CreateGraphics();
-		g->Clear(Color::White);
+		Graphics^ gJuego = panel2->CreateGraphics();
 
 		if (tramoActual != nullptr)
-			tramoActual->Dibujar(g, this->jugador);
-		if (jugador != nullptr)
-			jugador->Dibujar(g);
-
-		delete g;
-	}
-	void LimitarJugador()
-	{
-		if (jugador->Posicion.X < 0)
-			jugador->Posicion = Point(0, jugador->Posicion.Y);
-		else if (jugador->Posicion.X > panel2->Width)
-			jugador->Posicion = Point(panel2->Width, jugador->Posicion.Y);
-
-		if (jugador->Posicion.Y < 0)
-			jugador->Posicion = Point(jugador->Posicion.X, 0);
-		else if (jugador->Posicion.Y > panel2->Height)
-			jugador->Posicion = Point(jugador->Posicion.X, panel2->Height);
-	}
-	void GameLoop(Object^ sender, EventArgs^ e)
-	{
-		if (jugador != nullptr)
-			LimitarJugador();
+			gJuego->Clear(this->coloresTramos[this->tramoIndex]);
+		else
+			gJuego->Clear(Color::White);
 
 		if (tramoActual != nullptr)
-			tramoActual->Actualizar();
+			tramoActual->Dibujar(gJuego, this->jugador);
+		if (jugador != nullptr)
+			jugador->Dibujar(gJuego);
 
-		DibujarJuego();
+		delete gJuego;
+
+
+		Graphics^ gMinimapa = panel1->CreateGraphics();
+		gMinimapa->Clear(this->panel1->BackColor);
+		gMinimapa->DrawString(label1->Text, label1->Font, Brushes::Black, Point(54, 9));
+
+		DibujarMinimapa(gMinimapa);
+
+		delete gMinimapa;
+
+
+		if (jugador != nullptr)
+		{
+			lblLados->Text = "Lados: " + jugador->getLados();
+			lblPuntaje->Text = "Puntaje: " + jugador->getScoring();
+			lblAngulos->Text = "Ángulos: " + jugador->getSumaDeAngulos() + "°";
+			lblVelocidad->Text = "Velocidad: " + jugador->getVelocidad();
+		}
 	}
-	}; 
+
+		   void LimitarJugador()
+		   {
+			   if (jugador->Posicion.X < 0)
+				   jugador->Posicion = Point(0, jugador->Posicion.Y);
+			   else if (jugador->Posicion.X > panel2->Width)
+				   jugador->Posicion = Point(panel2->Width, jugador->Posicion.Y);
+
+			   if (jugador->Posicion.Y < 0)
+				   jugador->Posicion = Point(jugador->Posicion.X, 0);
+			   else if (jugador->Posicion.Y > panel2->Height)
+				   jugador->Posicion = Point(jugador->Posicion.X, panel2->Height);
+		   }
+
+		   void AvanzarSiguienteTramo()
+		   {
+			   this->tramoIndex++;
+
+			   if (this->tramoIndex < this->listaTramos->Count && this->listaTramos[this->tramoIndex] == nullptr)
+			   {
+				   this->tramoIndex++;
+			   }
+
+			   if (this->tramoIndex < this->listaTramos->Count)
+			   {
+				   if (this->tramoIndex == 2)
+				   {
+					   this->jugador->Posicion = Point(panel2->Width - 50, jugador->Posicion.Y);
+
+					   delete this->listaTramos[2];
+					   this->listaTramos[2] = gcnew Tramo3(panel2->Width, panel2->Height, true);
+				   }
+
+				   this->tramoActual = this->listaTramos[this->tramoIndex];
+			   }
+			   else
+			   {
+				   this->timerJuego->Stop();
+				   this->tramoActual = nullptr;
+			   }
+		   }
+
+		   void GameLoop(Object^ sender, EventArgs^ e)
+		   {
+			   if (jugador != nullptr)
+				   LimitarJugador();
+
+			   if (tramoActual == nullptr)
+				   return;
+
+			   if (jugador->getLados() <= 2)
+			   {
+				   this->timerJuego->Stop();
+				   MessageBox::Show(this, "Perdiste ;(", "vuelve a intentarlo", MessageBoxButtons::OK, MessageBoxIcon::Information);
+				   this->Close();
+				   return;
+			   }
+
+			   if (this->tramoIndex == 0)
+			   {
+				   if (tramoActual->Figuras->Count == 0)
+				   {
+					   AvanzarSiguienteTramo();
+				   }
+			   }
+			   else if (this->tramoIndex == 2)
+			   {
+				   if (jugador->getLados() >= 10)
+				   {
+					   this->timerJuego->Stop();
+					   this->tramoActual = nullptr;
+
+					   MessageBox::Show(this,
+						   "!Felicidades Ganaste PoliDashRunner!",
+						   "Victoria",
+						   MessageBoxButtons::OK,
+						   MessageBoxIcon::Information);
+
+					   this->Close();
+					   return;
+				   }
+			   }
+
+			   if (tramoActual != nullptr)
+				   tramoActual->Actualizar();
+
+			   DibujarJuego();
+		   }
+	};
 }
