@@ -26,16 +26,21 @@ public:
 
     void Dibujar(Graphics^ g, Figura^ entityToColision) {
         for (int i = figuras->Count - 1; i >= 0; i--) {
+            if (i >= figuras->Count) continue;
             Figura^ f = figuras[i];
-            if (f != nullptr) {
-                f->Dibujar(g);
-                if (Colision(entityToColision, f, entityToColision->getRadioBox(), f->getRadioBox())) {
-                    entityToColision->InteraccionColision(gcnew ColisionArgs(f->getScore(), f->getColor()));
-                    figuras->RemoveAt(i);
-                }
-                if (this->colisionTramo(f->Posicion.X, f->Posicion.Y)) {
-                    figuras->RemoveAt(i);
-                }
+            if (f == nullptr) continue;
+
+            f->Dibujar(g);
+
+            if (Colision(entityToColision, f, entityToColision->getRadioBox(), f->getRadioBox())) {
+                entityToColision->InteraccionColision(gcnew ColisionArgs(f->getScore(), f->getColor()));
+                figuras->RemoveAt(i);
+                continue;
+            }
+
+            if (this->colisionTramo(f->Posicion.X, f->Posicion.Y)) {
+                figuras->RemoveAt(i);
+                continue;
             }
         }
     };

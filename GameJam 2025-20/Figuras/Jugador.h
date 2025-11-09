@@ -78,8 +78,8 @@ public:
             this->scoring += args->scoring;
         }
         else {
-            this->lados--;
-            this->scoring -= args->scoring;
+            if (this->lados > 3) this->lados--;
+            this->scoring = (this->scoring - args->scoring < 0) ? 0 : (this->scoring - args->scoring);
         }
     }
 

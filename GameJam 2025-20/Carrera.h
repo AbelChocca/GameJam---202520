@@ -20,6 +20,7 @@ namespace GameJam202520 {
 	private:
 		bool esAutomatico;
 		Timer^ timerJuego;
+		Bitmap^ minimapaBase;
 		Jugador^ jugador;
 		Tramo^ tramoActual;
 	private: System::Windows::Forms::Panel^ panel1;
@@ -67,6 +68,31 @@ namespace GameJam202520 {
 			this->listaTramos->Add(gcnew Tramo3(panel2->Width, panel2->Height, false)); // Índice 2
 
 			this->tramoActual = this->listaTramos[this->tramoIndex];
+
+			this->minimapaBase = gcnew Bitmap(this->panel1->Width, this->panel1->Height);
+			Graphics^ gBase = Graphics::FromImage(this->minimapaBase);
+
+			Pen^ borderPen = gcnew Pen(Color::Black, 2);
+			SolidBrush^ brushT1 = gcnew SolidBrush(this->coloresTramos[0]);
+			SolidBrush^ brushT2 = gcnew SolidBrush(this->coloresTramos[1]);
+			SolidBrush^ brushT3 = gcnew SolidBrush(this->coloresTramos[2]);
+
+			Rectangle rectT1 = Rectangle(90, 210, 65, 30);
+			Rectangle rectT2 = Rectangle(120, 80, 35, 90);
+			Rectangle rectT3 = Rectangle(90, 40, 65, 30);
+
+			gBase->FillRectangle(brushT1, rectT1);
+			gBase->FillRectangle(brushT2, rectT2);
+			gBase->FillRectangle(brushT3, rectT3);
+
+			gBase->DrawRectangle(borderPen, rectT1);
+			gBase->DrawRectangle(borderPen, rectT2);
+			gBase->DrawRectangle(borderPen, rectT3);
+
+			// Limpieza
+			delete gBase;
+			delete borderPen;
+			delete brushT1; delete brushT2; delete brushT3;
 
 			this->timerJuego->Tick += gcnew EventHandler(this, &Carrera::GameLoop);
 			this->timerJuego->Start();
@@ -200,59 +226,30 @@ namespace GameJam202520 {
 		jugador->moverJugador(e->KeyCode);
 	}
 
-		   void DibujarMinimapa(Graphics^ g)
-		   {
-			   // --- Pinceles y Lápiz ---
-			   Pen^ borderPen = gcnew Pen(Color::Black, 2);
+	void DibujarJugadorEnMinimapa(Graphics^ g, Point entityPoint)
+	{
+		int iconSize = 10;
+		SolidBrush^ playerBrush = gcnew SolidBrush(jugador->getColor());
 
-			   // --- Definir las áreas de los Tramos (según la imagen) ---
-			   Rectangle rectT1 = Rectangle(90, 210, 65, 30); // Abajo
-			   Rectangle rectT2 = Rectangle(120, 80, 35, 90); // Derecha (vertical)
-			   Rectangle rectT3 = Rectangle(90, 40, 65, 30);  // Arriba
+		Rectangle rectT1 = Rectangle(90, 210, 65, 30);
+		Rectangle rectT2 = Rectangle(120, 80, 35, 90);
+		Rectangle rectT3 = Rectangle(90, 40, 65, 30);
 
-			   // --- Brochas de color para cada tramo ---
-			   SolidBrush^ brushT1 = gcnew SolidBrush(this->coloresTramos[0]); // Celeste
-			   SolidBrush^ brushT2 = gcnew SolidBrush(this->coloresTramos[1]); // Verde
-			   SolidBrush^ brushT3 = gcnew SolidBrush(this->coloresTramos[2]); // Naranja
+		Rectangle tramoRect;
+		if (tramoIndex == 0) tramoRect = rectT1;
+		else if (tramoIndex == 1) tramoRect = rectT2;
+		else tramoRect = rectT3;
 
-			   // --- Dibujar Tramos (Relleno y Borde) ---
-			   g->FillRectangle(brushT1, rectT1);
-			   g->FillRectangle(brushT2, rectT2);
-			   g->FillRectangle(brushT3, rectT3);
+		double relX = (double)(entityPoint.X % panel2->Width) / panel2->Width;
+		double relY = (double)(entityPoint.Y % panel2->Height) / panel2->Height;
 
-			   g->DrawRectangle(borderPen, rectT1);
-			   g->DrawRectangle(borderPen, rectT2);
-			   g->DrawRectangle(borderPen, rectT3);
+		int iconX = tramoRect.X + (int)(relX * (tramoRect.Width - iconSize));
+		int iconY = tramoRect.Y + (int)(relY * (tramoRect.Height - iconSize));
 
-			   // --- Dibujar Ícono del Jugador ---
-			   if (jugador == nullptr) return;
-
-			   Point iconPos;
-			   int iconSize = 10;
-
-			   if (tramoIndex == 2) { // En Tramo 1
-				   iconPos = Point(rectT1.X + (rectT1.Width / 2) - (iconSize / 2),
-					   rectT3.Y + (rectT1.Height / 2) - (iconSize / 2));
-			   }
-			   else if (tramoIndex == 1) { // En Tramo 2
-				   iconPos = Point(rectT2.X + (rectT2.Width / 2) - (iconSize / 2),
-					   rectT2.Y + (rectT2.Height / 2) - (iconSize / 2));
-			   }
-			   else if (tramoIndex == 0) { // En Tramo 3
-				   iconPos = Point(rectT3.X + (rectT3.Width / 2) - (iconSize / 2),
-					   rectT1.Y + (rectT3.Height / 2) - (iconSize / 2));
-			   }
-
-			   SolidBrush^ playerBrush = gcnew SolidBrush(jugador->getColor());
-			   g->FillEllipse(playerBrush, iconPos.X, iconPos.Y, iconSize, iconSize);
-
-			   // --- Limpieza ---
-			   delete borderPen;
-			   delete brushT1;
-			   delete brushT2;
-			   delete brushT3;
-			   delete playerBrush;
-		   }	private:
+		g->FillEllipse(playerBrush, iconX, iconY, iconSize, iconSize);
+		delete playerBrush;
+	}
+	private:
 		void DibujarJuego()
 	{
 		Graphics^ gJuego = panel2->CreateGraphics();
@@ -271,12 +268,18 @@ namespace GameJam202520 {
 
 
 		Graphics^ gMinimapa = panel1->CreateGraphics();
-		gMinimapa->Clear(this->panel1->BackColor);
+
+		// Dibuja el minimapa pre-renderizado
+		gMinimapa->DrawImage(this->minimapaBase, 0, 0);
+
+		// Dibuja el título encima si quieres
 		gMinimapa->DrawString(label1->Text, label1->Font, Brushes::Black, Point(54, 9));
 
-		DibujarMinimapa(gMinimapa);
+		// Dibuja solo el jugador en el minimapa (actualizado cada frame)
+		DibujarJugadorEnMinimapa(gMinimapa, this->jugador->Posicion);
 
 		delete gMinimapa;
+
 
 
 		if (jugador != nullptr)
