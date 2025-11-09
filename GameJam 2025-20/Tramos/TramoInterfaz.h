@@ -13,14 +13,22 @@ protected:
     List<Figura^>^ figuras;
     Point posicionInicial;
     Point posicionFinal;
+    Color colorTramo;
+    array<Color>^ coloresDisponibles;
     Random^ rand;
+    int anchoPanel;
+    int alturaPanel;
 
 public:
-    Tramo(int initX, int initY, int endX, int endY)
+    Tramo(int anchoPanel, int alturaPanel, int initX, int initY, int endX, int endY, Color colorTramo)
     {
+        this->colorTramo = colorTramo;
+        this->anchoPanel = anchoPanel;
+        this->alturaPanel = alturaPanel;
         this->figuras = gcnew List<Figura^>();
         this->posicionInicial = Point(initX, initY);
         this->posicionFinal = Point(endX, endY);
+        this->coloresDisponibles = gcnew array<Color>{ Color::DarkGreen, Color::Blue, Color::Red };
         this->rand = gcnew Random();
     }
 
@@ -53,6 +61,7 @@ public:
     virtual void Actualizar() abstract;
     virtual bool colisionTramo(int x, int y) abstract;
     virtual bool llegoAlFinal(Figura^ entity) abstract;
+    virtual void CrearNuevaFigura() abstract;
 
     virtual void Reiniciar()
     {
@@ -72,4 +81,5 @@ public:
         void set(Point value) { posicionInicial = value; }
     }
     Point getPosFinal() { return posicionFinal; }
+    Color getColorTramo() { return this->colorTramo; }
 };

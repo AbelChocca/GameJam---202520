@@ -70,9 +70,9 @@ namespace GameJam202520 {
 			this->listaTramos = gcnew System::Collections::Generic::List<Tramo^>();
 			this->tramoIndex = 0;
 
-			this->listaTramos->Add(gcnew Tramo1()); 
-			this->listaTramos->Add(gcnew Tramo2(panel2->Width, panel2->Height));
-			this->listaTramos->Add(gcnew Tramo3(panel2->Width, panel2->Height, false));
+			this->listaTramos->Add(gcnew Tramo1(this->panel2->Width, this->panel2->Height, Color::LightBlue)); 
+			this->listaTramos->Add(gcnew Tramo2(panel2->Width, panel2->Height, Color::Green));
+			this->listaTramos->Add(gcnew Tramo3(panel2->Width, panel2->Height, true, Color::Orange));
 
 			this->tramoActual = this->listaTramos[this->tramoIndex];
 
@@ -235,36 +235,41 @@ namespace GameJam202520 {
 		jugador->moverJugador(e->KeyCode);
 	}
 
-	void DibujarJugadorEnMinimapa(Graphics^ g, Point entityPoint)
-	{
-		int iconSize = 10;
-		SolidBrush^ playerBrush = gcnew SolidBrush(jugador->getColor());
+		   void DibujarJugadorEnMinimapa(Graphics^ g, Point entityPoint)
+		   {
+			   int iconSize = 10;
+			   SolidBrush^ playerBrush = gcnew SolidBrush(jugador->getColor());
 
-		Rectangle rectT1 = Rectangle(90, 210, 65, 30);
-		Rectangle rectT2 = Rectangle(120, 80, 35, 90);
-		Rectangle rectT3 = Rectangle(90, 40, 65, 30);
+			   // Rectángulo del tramo actual en el minimapa
+			   Rectangle rectT1 = Rectangle(90, 210, 65, 30);
+			   Rectangle rectT2 = Rectangle(120, 80, 35, 90);
+			   Rectangle rectT3 = Rectangle(90, 40, 65, 30);
 
-		Rectangle tramoRect;
-		if (tramoIndex == 0) tramoRect = rectT1;
-		else if (tramoIndex == 1) tramoRect = rectT2;
-		else tramoRect = rectT3;
+			   Rectangle rectTramoActual;
+			   if (this->tramoIndex == 0) rectTramoActual = rectT1;
+			   else if (this->tramoIndex == 1) rectTramoActual = rectT2;
+			   else rectTramoActual = rectT3;
 
-		double relX = (double)(entityPoint.X % panel2->Width) / panel2->Width;
-		double relY = (double)(entityPoint.Y % panel2->Height) / panel2->Height;
+			   // Calcular posición proporcional del jugador dentro del panel
+			   double relX = (double)entityPoint.X / panel2->Width;
+			   double relY = (double)entityPoint.Y / panel2->Height;
 
-		int iconX = tramoRect.X + (int)(relX * (tramoRect.Width - iconSize));
-		int iconY = tramoRect.Y + (int)(relY * (tramoRect.Height - iconSize));
+			   // Escalar a las coordenadas del rectángulo del minimapa
+			   int iconX = rectTramoActual.X + (int)(relX * (rectTramoActual.Width - iconSize));
+			   int iconY = rectTramoActual.Y + (int)(relY * (rectTramoActual.Height - iconSize));
 
-		g->FillEllipse(playerBrush, iconX, iconY, iconSize, iconSize);
-		delete playerBrush;
-	}
+			   g->FillEllipse(playerBrush, iconX, iconY, iconSize, iconSize);
+			   delete playerBrush;
+		   }
+
+
 	private:
 		void DibujarJuego()
 	{
 		Graphics^ gJuego = panel2->CreateGraphics();
 
 		if (tramoActual != nullptr)
-			gJuego->Clear(this->coloresTramos[this->tramoIndex]);
+			gJuego->Clear(this->tramoActual->getColorTramo());
 		else
 			gJuego->Clear(Color::White);
 
@@ -313,21 +318,10 @@ namespace GameJam202520 {
 
 		   void AvanzarSiguienteTramo()
 		   {
+			   this->tramoIndex++;
 			   if (this->tramoIndex >= this->listaTramos->Count) {
 				   this->timerJuego->Stop();
 				   this->tramoActual = nullptr;
-				   MessageBox::Show(this,
-					   "!Felicidades pasarás al siguiente tramo",
-					   "Cambio de tramo",
-					   MessageBoxButtons::OK,
-					   MessageBoxIcon::Information);
-				   return;
-			   }
-			   this->listaTramos->RemoveAt(this->tramoIndex);
-			   if (this->tramoIndex >= this->listaTramos->Count) {
-				   this->timerJuego->Stop();
-				   this->tramoActual = nullptr;
-				   return;
 			   }
 
 			   while (this->tramoIndex < this->listaTramos->Count &&
@@ -338,6 +332,12 @@ namespace GameJam202520 {
 			   if (this->tramoIndex < this->listaTramos->Count) {
 				   this->tramoActual = this->listaTramos[this->tramoIndex];
 				   this->jugador->actualizarPunto(this->tramoActual->PosInicial);
+				   MessageBox::Show(this,
+					   "!Felicidades pasarás al siguiente tramo",
+					   "Cambio de tramo",
+					   MessageBoxButtons::OK,
+					   MessageBoxIcon::Information);
+				   return;
 			   }
 			   else {
 				   this->timerJuego->Stop();
@@ -414,7 +414,7 @@ namespace GameJam202520 {
 
 			   if (tramoActual != nullptr)
 				   tramoActual->Actualizar();
-
+			   
 			   DibujarJuego();
 		   }};
 }

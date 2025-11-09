@@ -18,7 +18,7 @@ private:
 
 public:
     // Constructor modificado
-    Tramo2(int ancho, int alto) : Tramo(ancho / 2, alto, ancho / 2, 0) // <-- Constructor Vertical (Inicio Abajo, Fin Arriba)
+    Tramo2(int ancho, int alto, Color colorTramo) : Tramo(ancho, alto, ancho / 2, alto, ancho / 2, 0,colorTramo)
     {
         this->anchoPanel = ancho;
         this->alturaPanel = alto;
@@ -31,7 +31,7 @@ public:
         CrearNuevaFigura();
     }
 
-    void CrearNuevaFigura() {
+    void CrearNuevaFigura() override {
         int tipoFigura = rand->Next(0, 3);
         Color nuevoColor = coloresDisponibles[rand->Next(0, coloresDisponibles->Length)];
         int nuevoScore = rand->Next(1, 5);

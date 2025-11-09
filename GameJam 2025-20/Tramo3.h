@@ -11,18 +11,12 @@ public ref class Tramo3 : public Tramo
 {
 private:
     int velocidadFiguras;
-    int anchoPanel;
-    int alturaPanel;
-    array<Color>^ coloresDisponibles;
     bool moverHaciaDerecha;
 
 public:
-    //                                             (initX, initY, finalX, finalY)
-    Tramo3(int ancho, int alto, bool moverDerecha) : Tramo(25, alto / 2, ancho - 25, 0) {
-        this->anchoPanel = ancho;
-        this->alturaPanel = alto;
+    Tramo3(int ancho, int alto, bool moverDerecha, Color colorTramo) : Tramo(ancho, alto,ancho, 50, 5, 0, colorTramo)
+    {
         this->velocidadFiguras = 4;
-        this->coloresDisponibles = gcnew array<Color>{ Color::DarkGreen, Color::Blue, Color::Red };
         this->moverHaciaDerecha = moverDerecha;
 
         CrearNuevaFigura();
@@ -30,7 +24,7 @@ public:
         CrearNuevaFigura();
     }
 
-    void CrearNuevaFigura() {
+    virtual void CrearNuevaFigura() override {
         int tipoFigura = rand->Next(0, 3);
         Color nuevoColor = coloresDisponibles[rand->Next(0, coloresDisponibles->Length)];
         int nuevoScore = rand->Next(1, 5);

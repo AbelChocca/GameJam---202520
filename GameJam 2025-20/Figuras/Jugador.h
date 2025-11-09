@@ -81,6 +81,7 @@ public:
             if (this->lados > 3) this->lados--;
             this->scoring = (this->scoring - args->scoring < 0) ? 0 : (this->scoring - args->scoring);
         }
+        this->sumaDeAngulos = (this->lados - 2) * 180;
     }
 
     void resetear() {
