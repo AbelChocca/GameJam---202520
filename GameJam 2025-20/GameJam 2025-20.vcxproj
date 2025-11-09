@@ -135,6 +135,7 @@
     <ClInclude Include="shared\ColisionArgs.h" />
     <ClInclude Include="Tramo3.h" />
     <ClInclude Include="Tramos\Tramo1.h" />
+    <ClInclude Include="Tramos\Tramo2.h" />
     <ClInclude Include="Tramos\TramoInterfaz.h" />
     <ClInclude Include="VentanaPrincipal.h">
       <FileType>CppForm</FileType>

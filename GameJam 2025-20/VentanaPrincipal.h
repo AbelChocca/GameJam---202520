@@ -112,7 +112,9 @@ namespace GameJam202520 {
 		v->ShowDialog();
 	}
 	private: System::Void button2_Click(System::Object^ sender, System::EventArgs^ e) {
-
+		// Inicia Carrera y le pasa 'true' para activar el modo automático
+		Carrera^ v = gcnew Carrera(true);
+		v->ShowDialog();
 	}
 	};
 }

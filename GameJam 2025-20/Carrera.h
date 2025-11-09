@@ -55,9 +55,9 @@ namespace GameJam202520 {
 			this->jugador = gcnew Jugador(25, this->panel2->Height / 2);
 
 			this->coloresTramos = gcnew array<Color>{
-				Color::LightBlue, // Celeste para Tramo 1
-					Color::Green,     // Verde para Tramo 2
-					Color::Orange     // Naranja para Tramo 3
+				Color::LightBlue, 
+					Color::Green,     
+					Color::Orange     
 			};
 
 			this->listaTramos = gcnew System::Collections::Generic::List<Tramo^>();
