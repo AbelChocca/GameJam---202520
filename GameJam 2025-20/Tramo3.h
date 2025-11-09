@@ -17,7 +17,7 @@ private:
     bool moverHaciaDerecha;
 
 public:
-    Tramo3(int ancho, int alto, bool moverDerecha) : Tramo(300, 50, 0, 0)
+    Tramo3(int ancho, int alto, bool moverDerecha) : Tramo(0, 50, 0, 0)
     {
         this->anchoPanel = ancho;
         this->alturaPanel = alto;

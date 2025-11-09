@@ -1,6 +1,7 @@
 #pragma once
 #include "Figuras/Jugador.h"
 #include "Tramos/Tramo1.h"
+#include "../GameJam 2025-20/Tramos/Tramo2.h"
 #include "Tramo3.h" // Incluido desde la raíz
 
 namespace GameJam202520 {
@@ -37,8 +38,10 @@ namespace GameJam202520 {
 		System::Collections::Generic::List<Tramo^>^ listaTramos;
 		int tramoIndex;
 		array<Color>^ coloresTramos;
-
-
+	private:
+		bool AutoMoveUp;
+		bool AutoMoveRight;
+		bool AutoMoveLeft;
 	public:
 		Carrera(bool esAutomatico)
 		{
@@ -47,6 +50,9 @@ namespace GameJam202520 {
 			//TODO: agregar código de constructor aquí
 			//
 			this->esAutomatico = esAutomatico;
+			this->AutoMoveUp = true;
+			this->AutoMoveRight = true; 
+			this->AutoMoveLeft = true;
 			this->timerJuego = gcnew Timer();
 			this->timerJuego->Interval = 30;
 			this->KeyPreview = true;
@@ -64,8 +70,8 @@ namespace GameJam202520 {
 			this->tramoIndex = 0;
 
 			this->listaTramos->Add(gcnew Tramo1()); 
-			this->listaTramos->Add(nullptr);
-			this->listaTramos->Add(gcnew Tramo3(panel2->Width, panel2->Height, false)); // Índice 2
+			this->listaTramos->Add(gcnew Tramo2(panel2->Width, panel2->Height));
+			this->listaTramos->Add(gcnew Tramo3(panel2->Width, panel2->Height, false));
 
 			this->tramoActual = this->listaTramos[this->tramoIndex];
 
@@ -223,6 +229,8 @@ namespace GameJam202520 {
 	private: System::Void label1_Click(System::Object^ sender, System::EventArgs^ e) {
 	}
 	private: void Carrera_KeyDown(System::Object^ sender, System::Windows::Forms::KeyEventArgs^ e) {
+		if (esAutomatico) return;
+
 		jugador->moverJugador(e->KeyCode);
 	}
 
@@ -310,6 +318,11 @@ namespace GameJam202520 {
 			   if (this->tramoIndex >= this->listaTramos->Count) {
 				   this->timerJuego->Stop();
 				   this->tramoActual = nullptr;
+				   MessageBox::Show(this,
+					   "!Felicidades pasarás al siguiente tramo",
+					   "Cambio de tramo",
+					   MessageBoxButtons::OK,
+					   MessageBoxIcon::Information);
 				   return;
 			   }
 			   this->listaTramos->RemoveAt(this->tramoIndex);
@@ -336,6 +349,64 @@ namespace GameJam202520 {
 
 		   void GameLoop(Object^ sender, EventArgs^ e)
 		   {
+			   if (esAutomatico && jugador != nullptr)
+			   {
+				   if (tramoIndex == 0 || tramoIndex==1)
+				   {
+					   if (jugador->Posicion.Y <= 0) {
+						   AutoMoveUp = false;
+						   AutoMoveRight = false;
+					   }
+					   else if (jugador->Posicion.Y >= panel2->Height) {
+						   AutoMoveUp = true;
+						   AutoMoveRight = true;
+					   }
+
+					   int nuevaY;
+					   int nuevaX;
+					   int velocidad = jugador->getVelocidad();
+
+					   if (AutoMoveUp) {
+						   nuevaY = jugador->Posicion.Y - velocidad;
+						   nuevaX = jugador->Posicion.X + velocidad;
+
+					   }
+					   else {
+						   nuevaY = jugador->Posicion.Y + velocidad;
+						   nuevaX = jugador->Posicion.X + velocidad;
+
+					   }
+					   jugador->Posicion = Point(nuevaX, jugador->Posicion.Y);
+					   jugador->Posicion = Point(jugador->Posicion.X, nuevaY);
+				   }
+				   // Tramo 2 (índice 1) -> Movimiento Horizontal
+				   else if (tramoIndex == 2)
+				   {
+					   if (jugador->Posicion.X <= 0) {
+						   AutoMoveUp = true;
+						   AutoMoveLeft = true;
+					   }
+					   else if (jugador->Posicion.X >= panel2->Width) {
+						   AutoMoveUp = false;
+						   AutoMoveLeft = false;
+					   }
+
+					   int nuevaX;
+					   int velocidad = jugador->getVelocidad();
+
+					   if (AutoMoveRight) {
+						   nuevaX = jugador->Posicion.X - velocidad;
+					   }
+					   else {
+						   nuevaX = jugador->Posicion.X - velocidad;
+					   }
+
+					   jugador->Posicion = Point(nuevaX, jugador->Posicion.Y);
+				   }
+			   }
+			   // --- FIN DEL BLOQUE AÑADIDO ---
+
+			   // --- TU CÓDIGO ORIGINAL (SIN CAMBIOS) ---
 			   if (jugador != nullptr)
 				   LimitarJugador();
 
@@ -372,6 +443,5 @@ namespace GameJam202520 {
 				   tramoActual->Actualizar();
 
 			   DibujarJuego();
-		   }
-	};
+		   }	};
 }

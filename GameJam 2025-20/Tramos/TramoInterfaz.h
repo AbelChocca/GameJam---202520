@@ -1,6 +1,6 @@
 #pragma once
 #include "../shared/ColisionArgs.h"
-#include "Figuras/Figura.h"
+#include "../Figuras/Figura.h"
 using namespace System;
 using namespace System::Drawing;
 using namespace System::Collections::Generic;
