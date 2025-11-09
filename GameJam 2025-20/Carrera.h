@@ -319,6 +319,7 @@ namespace GameJam202520 {
 		   void AvanzarSiguienteTramo()
 		   {
 			   this->tramoIndex++;
+			   this->jugador->setVelocidad(this->rand->Next(3, 6));
 			   if (this->tramoIndex >= this->listaTramos->Count) {
 				   this->timerJuego->Stop();
 				   this->tramoActual = nullptr;
@@ -372,24 +373,8 @@ namespace GameJam202520 {
 			   if (tramoActual == nullptr)
 				   return;
 
-
-			   if (this->tramoIndex == 2)
-			   {
-				   if (jugador->getLados() >= 10)
-				   {
-					   this->timerJuego->Stop();
-					   this->tramoActual = nullptr;
-					   MessageBox::Show(this,
-						   "!Felicidades Ganaste PoliDashRunner!",
-						   "Victoria",
-						   MessageBoxButtons::OK,
-						   MessageBoxIcon::Information);
-					   this->Close();
-					   return;
-				   }
-			   }
-			   else if (this->tramoActual->llegoAlFinal(this->jugador))
-			   {
+				if (this->tramoActual->llegoAlFinal(this->jugador))
+				{
 				   if (this->tramoIndex + 1 >= this->listaTramos->Count)
 				   {
 					   if (jugador->getLados() >= 10) {
@@ -400,7 +385,7 @@ namespace GameJam202520 {
 						   this->Close();
 						   return;
 					   }
-					   else if (jugador->getLados()>=1) {
+					   else {
 						   // PERDER
 						   this->timerJuego->Stop();
 						   MessageBox::Show(this, "Perdiste ;(", "vuelve a intentarlo", MessageBoxButtons::OK, MessageBoxIcon::Information);

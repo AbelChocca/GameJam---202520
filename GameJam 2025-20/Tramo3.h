@@ -14,7 +14,7 @@ private:
     bool moverHaciaDerecha;
 
 public:
-    Tramo3(int ancho, int alto, bool moverDerecha, Color colorTramo) : Tramo(ancho, alto,ancho, 50, 5, 0, colorTramo)
+    Tramo3(int ancho, int alto, bool moverDerecha, Color colorTramo) : Tramo(ancho, alto,ancho, 50, 10, 0, colorTramo)
     {
         this->velocidadFiguras = 4;
         this->moverHaciaDerecha = moverDerecha;
@@ -45,7 +45,7 @@ public:
         }
     }
     virtual bool llegoAlFinal(Figura^ entity) override {
-        return entity->Posicion.X >= this->posicionFinal.X;
+        return entity->Posicion.X <= this->posicionFinal.X;
     }
 
     virtual void Actualizar() override {
