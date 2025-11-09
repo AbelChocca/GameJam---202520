@@ -12,13 +12,15 @@ public ref class Tramo abstract
 protected:
     List<Figura^>^ figuras;
     Point posicionInicial;
+    Point posicionFinal;
     Random^ rand;
 
 public:
-    Tramo(int initX, int initY)
+    Tramo(int initX, int initY, int endX, int endY)
     {
         this->figuras = gcnew List<Figura^>();
         this->posicionInicial = Point(initX, initY);
+        this->posicionFinal = Point(endX, endY);
         this->rand = gcnew Random();
     }
 
@@ -45,6 +47,7 @@ public:
     }
     virtual void Actualizar() abstract;
     virtual bool colisionTramo(int x, int y) abstract;
+    virtual bool llegoAlFinal(Figura^ entity) abstract;
 
     virtual void Reiniciar()
     {
@@ -63,4 +66,5 @@ public:
         Point get() { return posicionInicial; }
         void set(Point value) { posicionInicial = value; }
     }
+    Point getPosFinal() { return posicionFinal; }
 };

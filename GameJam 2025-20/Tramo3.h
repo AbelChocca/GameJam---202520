@@ -17,7 +17,7 @@ private:
     bool moverHaciaDerecha;
 
 public:
-    Tramo3(int ancho, int alto, bool moverDerecha) : Tramo(0, 0)
+    Tramo3(int ancho, int alto, bool moverDerecha) : Tramo(300, 50, 0, 0)
     {
         this->anchoPanel = ancho;
         this->alturaPanel = alto;
@@ -49,6 +49,9 @@ public:
         case 1: figuras->Add(gcnew Circulo(Point(posX, posY), 20, nuevoColor, nuevoScore)); break;
         case 2: figuras->Add(gcnew Triangulo(Point(posX, posY), 30, nuevoColor, nuevoScore, 15)); break;
         }
+    }
+    virtual bool llegoAlFinal(Figura^ entity) override {
+        return entity->Posicion.X <= this->posicionFinal.X;
     }
 
     virtual void Actualizar() override {

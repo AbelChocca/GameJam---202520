@@ -33,13 +33,16 @@ public:
     int getSumaDeAngulos() { return sumaDeAngulos; }
 
     void setVelocidad(int v) { velocidad = v; }
+    void actualizarPunto(Point new_point) {
+        this->posicion = new_point;
+    }
 
     void moverJugador(Keys tecla) {
         switch (tecla) {
-        case Keys::Up: this->posicion.Y -= velocidad; break;
-        case Keys::Down: this->posicion.Y += velocidad; break;
-        case Keys::Left: this->posicion.X -= velocidad; break;
-        case Keys::Right: this->posicion.X += velocidad; break;
+        case Keys::W: this->posicion.Y -= velocidad; break;
+        case Keys::S: this->posicion.Y += velocidad; break;
+        case Keys::A: this->posicion.X -= velocidad; break;
+        case Keys::D: this->posicion.X += velocidad; break;
         }
     }
 

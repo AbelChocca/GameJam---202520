@@ -9,7 +9,6 @@ public:
     Triangulo(Point pos, int t, Color col, int score, int radioBox)
         : Figura(pos, col, score, radioBox), tamaño(t) {
     }
-    a
     virtual void Dibujar(Graphics^ g) override {
         SolidBrush^ b = gcnew SolidBrush(color);
         array<Point>^ puntos = {

@@ -286,6 +286,7 @@ namespace GameJam202520 {
 			lblAngulos->Text = "Ángulos: " + jugador->getSumaDeAngulos() + "°";
 			lblVelocidad->Text = "Velocidad: " + jugador->getVelocidad();
 		}
+
 	}
 
 		   void LimitarJugador()
@@ -303,27 +304,28 @@ namespace GameJam202520 {
 
 		   void AvanzarSiguienteTramo()
 		   {
-			   this->tramoIndex++;
+			   if (this->tramoIndex >= this->listaTramos->Count) {
+				   this->timerJuego->Stop();
+				   this->tramoActual = nullptr;
+				   return;
+			   }
+			   this->listaTramos->RemoveAt(this->tramoIndex);
+			   if (this->tramoIndex >= this->listaTramos->Count) {
+				   this->timerJuego->Stop();
+				   this->tramoActual = nullptr;
+				   return;
+			   }
 
-			   if (this->tramoIndex < this->listaTramos->Count && this->listaTramos[this->tramoIndex] == nullptr)
-			   {
+			   while (this->tramoIndex < this->listaTramos->Count &&
+				   this->listaTramos[this->tramoIndex] == nullptr) {
 				   this->tramoIndex++;
 			   }
 
-			   if (this->tramoIndex < this->listaTramos->Count)
-			   {
-				   if (this->tramoIndex == 2)
-				   {
-					   this->jugador->Posicion = Point(panel2->Width - 50, jugador->Posicion.Y);
-
-					   delete this->listaTramos[2];
-					   this->listaTramos[2] = gcnew Tramo3(panel2->Width, panel2->Height, true);
-				   }
-
+			   if (this->tramoIndex < this->listaTramos->Count) {
 				   this->tramoActual = this->listaTramos[this->tramoIndex];
+				   this->jugador->actualizarPunto(this->tramoActual->PosInicial);
 			   }
-			   else
-			   {
+			   else {
 				   this->timerJuego->Stop();
 				   this->tramoActual = nullptr;
 			   }
@@ -337,37 +339,30 @@ namespace GameJam202520 {
 			   if (tramoActual == nullptr)
 				   return;
 
-			   if (jugador->getLados() <= 2)
-			   {
-				   this->timerJuego->Stop();
-				   MessageBox::Show(this, "Perdiste ;(", "vuelve a intentarlo", MessageBoxButtons::OK, MessageBoxIcon::Information);
-				   this->Close();
-				   return;
-			   }
+			   if (this->tramoActual->llegoAlFinal(this->jugador)) {
+				   if (this->tramoIndex >= this->listaTramos->Count) {
+					   if (jugador->getLados() >= 10)
+					   {
+						   this->timerJuego->Stop();
+						   this->tramoActual = nullptr;
 
-			   if (this->tramoIndex == 0)
-			   {
-				   if (tramoActual->Figuras->Count == 0)
-				   {
-					   AvanzarSiguienteTramo();
+						   MessageBox::Show(this,
+							   "!Felicidades Ganaste PoliDashRunner!",
+							   "Victoria",
+							   MessageBoxButtons::OK,
+							   MessageBoxIcon::Information);
+
+						   this->Close();
+						   return;
+					   }
+					   else {
+						   this->timerJuego->Stop();
+						   MessageBox::Show(this, "Perdiste ;(", "vuelve a intentarlo", MessageBoxButtons::OK, MessageBoxIcon::Information);
+						   this->Close();
+						   return;
+					   }
 				   }
-			   }
-			   else if (this->tramoIndex == 2)
-			   {
-				   if (jugador->getLados() >= 10)
-				   {
-					   this->timerJuego->Stop();
-					   this->tramoActual = nullptr;
-
-					   MessageBox::Show(this,
-						   "!Felicidades Ganaste PoliDashRunner!",
-						   "Victoria",
-						   MessageBoxButtons::OK,
-						   MessageBoxIcon::Information);
-
-					   this->Close();
-					   return;
-				   }
+				   this->AvanzarSiguienteTramo();
 			   }
 
 			   if (tramoActual != nullptr)

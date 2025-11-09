@@ -6,7 +6,7 @@
 public ref class Tramo1 : public Tramo
 {
 public:
-    Tramo1() : Tramo(0, 30)
+    Tramo1() : Tramo(0, 30, 370, 0)
     {
         this->figuras->Add(gcnew Cuadrado(Point(320, 20), 30, 30, Color::Red, this->rand->Next(1, 3), 15));
         this->figuras->Add(gcnew Circulo(Point(320, 100), 20, Color::Blue, this->rand->Next(1, 4)));
@@ -21,4 +21,7 @@ public:
     bool colisionTramo(int x, int y) override {
         return x <= 0;
     };
+    bool llegoAlFinal(Figura^ entity) override {
+        return entity->Posicion.X > this->posicionFinal.X;
+    }
 };
