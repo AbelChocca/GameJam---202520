@@ -39,9 +39,9 @@ namespace GameJam202520 {
 		int tramoIndex;
 		array<Color>^ coloresTramos;
 	private:
-		bool AutoMoveUp;
-		bool AutoMoveRight;
-		bool AutoMoveLeft;
+			int autoMoveCounter;    // Contador para el movimiento aleatorio
+			int autoMoveVertical;   // -1=Arriba, 0=Quieto, 1=Abajo
+			int autoMoveHorizontal; // -1=Izquierda, 0=Quieto, 1=Derecha
 	public:
 		Carrera(bool esAutomatico)
 		{
@@ -50,9 +50,10 @@ namespace GameJam202520 {
 			//TODO: agregar código de constructor aquí
 			//
 			this->esAutomatico = esAutomatico;
-			this->AutoMoveUp = true;
-			this->AutoMoveRight = true; 
-			this->AutoMoveLeft = true;
+			this->rand = gcnew Random();
+			this->autoMoveCounter = 0;
+			this->autoMoveVertical = -1;
+			this->autoMoveHorizontal = 1; 
 			this->timerJuego = gcnew Timer();
 			this->timerJuego->Interval = 30;
 			this->KeyPreview = true;
@@ -277,13 +278,10 @@ namespace GameJam202520 {
 
 		Graphics^ gMinimapa = panel1->CreateGraphics();
 
-		// Dibuja el minimapa pre-renderizado
 		gMinimapa->DrawImage(this->minimapaBase, 0, 0);
 
-		// Dibuja el título encima si quieres
 		gMinimapa->DrawString(label1->Text, label1->Font, Brushes::Black, Point(54, 9));
 
-		// Dibuja solo el jugador en el minimapa (actualizado cada frame)
 		DibujarJugadorEnMinimapa(gMinimapa, this->jugador->Posicion);
 
 		delete gMinimapa;
@@ -351,91 +349,66 @@ namespace GameJam202520 {
 		   {
 			   if (esAutomatico && jugador != nullptr)
 			   {
-				   if (tramoIndex == 0 || tramoIndex==1)
+				   autoMoveCounter++;
+				   int velocidad = jugador->getVelocidad();
+
+				   if (autoMoveCounter > 50)
 				   {
-					   if (jugador->Posicion.Y <= 0) {
-						   AutoMoveUp = false;
-						   AutoMoveRight = false;
-					   }
-					   else if (jugador->Posicion.Y >= panel2->Height) {
-						   AutoMoveUp = true;
-						   AutoMoveRight = true;
-					   }
-
-					   int nuevaY;
-					   int nuevaX;
-					   int velocidad = jugador->getVelocidad();
-
-					   if (AutoMoveUp) {
-						   nuevaY = jugador->Posicion.Y - velocidad;
-						   nuevaX = jugador->Posicion.X + velocidad;
-
-					   }
-					   else {
-						   nuevaY = jugador->Posicion.Y + velocidad;
-						   nuevaX = jugador->Posicion.X + velocidad;
-
-					   }
-					   jugador->Posicion = Point(nuevaX, jugador->Posicion.Y);
-					   jugador->Posicion = Point(jugador->Posicion.X, nuevaY);
+					   autoMoveCounter = 0;
+					   autoMoveVertical = rand->Next(-1, 2);
+					   autoMoveHorizontal = rand->Next(-1, 2);
 				   }
-				   // Tramo 2 (índice 1) -> Movimiento Horizontal
-				   else if (tramoIndex == 2)
-				   {
-					   if (jugador->Posicion.X <= 0) {
-						   AutoMoveUp = true;
-						   AutoMoveLeft = true;
-					   }
-					   else if (jugador->Posicion.X >= panel2->Width) {
-						   AutoMoveUp = false;
-						   AutoMoveLeft = false;
-					   }
 
-					   int nuevaX;
-					   int velocidad = jugador->getVelocidad();
+				   int nuevaX = jugador->Posicion.X + (autoMoveHorizontal * velocidad);
+				   int nuevaY = jugador->Posicion.Y + (autoMoveVertical * velocidad);
 
-					   if (AutoMoveRight) {
-						   nuevaX = jugador->Posicion.X - velocidad;
-					   }
-					   else {
-						   nuevaX = jugador->Posicion.X - velocidad;
-					   }
-
-					   jugador->Posicion = Point(nuevaX, jugador->Posicion.Y);
-				   }
+				   jugador->Posicion = Point(nuevaX, nuevaY);
 			   }
-			   // --- FIN DEL BLOQUE AÑADIDO ---
 
-			   // --- TU CÓDIGO ORIGINAL (SIN CAMBIOS) ---
+
 			   if (jugador != nullptr)
 				   LimitarJugador();
 
 			   if (tramoActual == nullptr)
 				   return;
 
-			   if (this->tramoActual->llegoAlFinal(this->jugador)) {
-				   if (this->tramoIndex >= this->listaTramos->Count) {
-					   if (jugador->getLados() >= 10)
-					   {
+
+			   if (this->tramoIndex == 2)
+			   {
+				   if (jugador->getLados() >= 10)
+				   {
+					   this->timerJuego->Stop();
+					   this->tramoActual = nullptr;
+					   MessageBox::Show(this,
+						   "!Felicidades Ganaste PoliDashRunner!",
+						   "Victoria",
+						   MessageBoxButtons::OK,
+						   MessageBoxIcon::Information);
+					   this->Close();
+					   return;
+				   }
+			   }
+			   else if (this->tramoActual->llegoAlFinal(this->jugador))
+			   {
+				   if (this->tramoIndex + 1 >= this->listaTramos->Count)
+				   {
+					   if (jugador->getLados() >= 10) {
+						   // GANAR
 						   this->timerJuego->Stop();
 						   this->tramoActual = nullptr;
-
-						   MessageBox::Show(this,
-							   "!Felicidades Ganaste PoliDashRunner!",
-							   "Victoria",
-							   MessageBoxButtons::OK,
-							   MessageBoxIcon::Information);
-
+						   MessageBox::Show(this, "!Felicidades Ganaste PoliDashRunner!", "Victoria", MessageBoxButtons::OK, MessageBoxIcon::Information);
 						   this->Close();
 						   return;
 					   }
-					   else {
+					   else if (jugador->getLados()>=1) {
+						   // PERDER
 						   this->timerJuego->Stop();
 						   MessageBox::Show(this, "Perdiste ;(", "vuelve a intentarlo", MessageBoxButtons::OK, MessageBoxIcon::Information);
 						   this->Close();
 						   return;
 					   }
 				   }
+
 				   this->AvanzarSiguienteTramo();
 			   }
 
@@ -443,5 +416,5 @@ namespace GameJam202520 {
 				   tramoActual->Actualizar();
 
 			   DibujarJuego();
-		   }	};
+		   }};
 }
